@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dialog, RaisedButton, Divider, Chip, CardHeader, CardTitle, DatePicker, Card, TextField, SelectField, MenuItem} from 'material-ui';
+import { RaisedButton, Divider, Chip, CardTitle, DatePicker, Card, TextField} from 'material-ui';
 
 const style={
 	textField: { width: '40%', margin: '10px' },
@@ -20,7 +20,18 @@ class Navigation extends Component {
 			skillField: false,
 			skills: [],
 			skillsShow: false,
-			singleSkill: ''
+			singleSkill: '',
+			firstNameError: '',
+			lastNameError: '',
+			CityError: '',
+			provinceError: '',
+			countryError: '',
+			nativeLanguageError: '',
+			instituteError: '',
+			degreeError: '',
+			detailError: '',
+			skillError: '',
+			formData: []
 		}
 	}
 	handleSkill = (data)=>{
@@ -29,16 +40,27 @@ class Navigation extends Component {
 		});
 	}
 	handleInsertSkill = ()=>{
-		let skills = this.state.skills;
-		skills.push({skill: this.state.singleSkill});
-		this.setState(skills);
-		console.log(this.state.skills)
+		if (this.state.singleSkill==='') {
+			this.setState({ skillError: 'Skill field is empty' })
+		} else {
+			let skills = this.state.skills;
+			skills.push({skill: this.state.singleSkill});
+			this.setState(skills);
+			this.setState({ skillField: false,singleSkill: '',skillError: '' })
+		}
 	}
 	deleteSkill = (k)=>{
 		let skills = this.state.skills;
 		skills.splice(k,1);
 		this.setState(skills);
 		console.log(this.state.skills);
+	}
+	handleSubmit=(e)=>{
+		e.preventDefault();
+		let firstName = this.refs.firstName.getValue();
+		let degreeFrom = this.refs.degreeFrom.getValue();
+		// console.log('degree from ',this.refs.degreeFrom.getValue(),' degree to ',this.refs.degreeTo.getValue());
+		console.log(degreeFrom);
 	}
     render() {
         return (
@@ -85,33 +107,86 @@ class Navigation extends Component {
 					<div className="submit-property">
 						<div className="tab-content submit-property__content">
 							<Card >
-								<div>
+								<form onSubmit={this.handleSubmit} >
 									<CardTitle title="Personal Information" />	
 									<Divider />
 									<TextField
 									  style={style.textField}
-								      floatingLabelText="First Name"
+								      floatingLabelText="First Name*"
 								      required
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({firstNameError: 'First Name is required'})}
+								      	 	else {this.setState({firstNameError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({firstNameError: ''})}
+								  	  errorText={this.state.firstNameError}
+								  	  ref="firstName"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="Last Name"
+								      floatingLabelText="Last Name*"
+								      required
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({lastNameError: 'Last Name is required'})}
+								      	 	else {this.setState({lastNameError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({lastNameError: ''})}
+								  	  errorText={this.state.lastNameError}
+								  	  ref="lastName"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="City"
+								      floatingLabelText="City*"
+								      required
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({CityError: 'City Name is required'})}
+								      	 	else {this.setState({CityError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({CityError: ''})}
+								  	  errorText={this.state.CityError}
+								  	  ref="city"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="Province/State"
+								      floatingLabelText="Province/State*"
+								      required
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({provinceError: 'First Name is required'})}
+								      	 	else {this.setState({provinceError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({provinceError: ''})}
+								  	  errorText={this.state.provinceError}
+								  	  ref="province"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="Country"
+								      floatingLabelText="Country*"
+								      required
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({countryError: 'Country Name is required'})}
+								      	 	else {this.setState({countryError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({countryError: ''})}
+								  	  errorText={this.state.countryError}
+								  	  ref="country"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="Country"
+								      floatingLabelText="Native Language*"
+								      required
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({nativeLanguageError: 'You must specify your native language'})}
+								      	 	else {this.setState({nativeLanguageError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({nativeLanguageError: ''})}
+								  	  errorText={this.state.nativeLanguageError}
+								  	  ref="language"
 								    />
 								    <DatePicker hintText="Date Of Birth" style={style.textField} />
 								    <CardTitle title="Experience" subtitle="For students this is not mandatory" />	
@@ -120,10 +195,12 @@ class Navigation extends Component {
 									<TextField
 									  style={style.textField}
 								      floatingLabelText="Company"
+								      ref="company"
 								    />
 								    <TextField
 									  style={style.textField}
 								      floatingLabelText="Designation"
+								      ref="designation"
 								    /><br />
 								    <label style={{margin: '10px',paddingLeft: '8%',float: 'left'}} >Duration: </label>
 								    <DatePicker hintText="From" style={{width:'30%', marginLeft:'5%'}} />
@@ -134,27 +211,52 @@ class Navigation extends Component {
 								      rows={2}
 								      style={{width: '84%'}}
 								      floatingLabelStyle={{position:'relative', float: 'left'}}
+								      ref="responsibilities"
 								    />
 
 								    <CardTitle title="Education"/>	
 									<Divider />
 									<TextField
 									  style={style.textField}
-								      floatingLabelText="Institute"
+								      floatingLabelText="Institute*"
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({instituteError: 'Country Name is required'})}
+								      	 	else {this.setState({instituteError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({instituteError: ''})}
+								  	  errorText={this.state.instituteError}
+								  	  ref="institute"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="Degree"
+								      floatingLabelText="Degree*"
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({degreeError: 'Country Name is required'})}
+								      	 	else {this.setState({degreeError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({degreeError: ''})}
+								  	  errorText={this.state.degreeError}
+								  	  ref="degree"
 								    /><br />
 								    <label style={{margin: '10px',paddingLeft: '8%',float: 'left'}} >Duration: </label>
-								    <DatePicker hintText="From" style={{width:'30%', marginLeft:'5%'}} />
-								    <DatePicker hintText="To" style={{width:'38%', margin: '10px'}} />	
+								    <DatePicker hintText="From" style={{width:'30%', marginLeft:'5%'}} ref="degreeFrom" />
+								    <DatePicker hintText="To" style={{width:'38%', margin: '10px'}} ref="degreeTo" />	
 								    <TextField
-								      floatingLabelText="Details"
+								      floatingLabelText="Details*"
 								      multiLine={true}
 								      rows={2}
 								      style={{width: '84%'}}
 								      floatingLabelStyle={{position:'relative', float: 'left'}}
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({detailError: 'Country Name is required'})}
+								      	 	else {this.setState({detailError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({detailError: ''})}
+								  	  errorText={this.state.detailError}
+								  	  ref="detail"
 								    />
 								    <CardTitle title="Skills"/>	
 									<Divider />
@@ -168,6 +270,7 @@ class Navigation extends Component {
 											  style={style.textField}
 										      floatingLabelText="Skill"
 										      onChange={(event)=>this.handleSkill(event.target.value)}
+										      errorText={this.state.skillError}
 										    />
 										     <RaisedButton
 										      backgroundColor="#a4c639"
@@ -201,30 +304,58 @@ class Navigation extends Component {
 									<Divider />
 									<TextField
 									  style={style.textField}
-								      floatingLabelText="Email"
+								      floatingLabelText="Email*"
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({emailError: 'Country Name is required'})}
+								      	 	else {this.setState({emailError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({emailError: ''})}
+								  	  errorText={this.state.emailError}
+								  	  type="email"
+								  	  ref="email"
 								    />
 								    <TextField
 									  style={style.textField}
-								      floatingLabelText="Address"
+								      floatingLabelText="Address*"
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({addressError: 'Country Name is required'})}
+								      	 	else {this.setState({addressError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({addressError: ''})}
+								  	  errorText={this.state.addressError}
+								  	  ref="address"
 								    />
 								    <TextField
 									  style={style.textField}
 								      floatingLabelText="Mobile No"
+								      onBlur={(e)=>{
+								      	 if (e.target.value==='') {this.setState({mobileError: 'Country Name is required'})}
+								      	 	else {this.setState({mobileError: ''})}
+
+								      }}
+								  	  onChange={(e)=>this.setState({mobileError: ''})}
+								  	  errorText={this.state.mobileError}
+								  	  ref="mobile"
 								    />
 								    <TextField
 									  style={style.textField}
 								      floatingLabelText="Facebook Profile URL"
+								      ref="facebook"
 								    />
 								    <TextField
 									  style={style.textField}
 								      floatingLabelText="LinkedIn Profile URL"
+								      ref="linkedin"
 								    />
 								    <TextField
 									  style={style.textField}
 								      floatingLabelText="Twitter Profile URL"
+								      ref="twitter"
 								    /><br />
-								    <RaisedButton label="Submit" primary={true} style={{margin:15}} />
-								</div>
+								    <RaisedButton label="Submit" type="submit-property__content" primary={true} style={{margin:15}} />
+								</form>
 							</Card>
 						</div>
 					</div>
