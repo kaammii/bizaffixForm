@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { RaisedButton, Divider, Chip, CardTitle, DatePicker, Card, TextField} from 'material-ui';
+import moment from 'moment';
+import firebase from 'firebase';
 
 const style={
 	textField: { width: '40%', margin: '10px' },
@@ -31,7 +33,8 @@ class Navigation extends Component {
 			degreeError: '',
 			detailError: '',
 			skillError: '',
-			formData: []
+			formData: [],
+			submitSuccess: false
 		}
 	}
 	handleSkill = (data)=>{
@@ -57,10 +60,68 @@ class Navigation extends Component {
 	}
 	handleSubmit=(e)=>{
 		e.preventDefault();
+		let ref = firebase.database().ref();
 		let firstName = this.refs.firstName.getValue();
-		let degreeFrom = this.refs.degreeFrom.getValue();
-		// console.log('degree from ',this.refs.degreeFrom.getValue(),' degree to ',this.refs.degreeTo.getValue());
-		console.log(degreeFrom);
+		let lastName = this.refs.lastName.getValue();
+		let city = this.refs.city.getValue();
+		let province = this.refs.province.getValue();
+		let country = this.refs.country.getValue();
+		let language = this.refs.language.getValue();
+		let dob = moment(this.refs.dob.state.date).format('MMM Do YY');
+		let company = this.refs.company.getValue();
+		let designation = this.refs.designation.getValue();
+		let companyFrom = moment(this.refs.companyFrom.state.date).format('MMM Do YY');
+		let companyTo = moment(this.refs.companyTo.state.date).format('MMM Do YY');
+		let responsibilities = this.refs.responsibilities.getValue();
+		let institute = this.refs.institute.getValue();
+		let degree = this.refs.degree.getValue();
+		let degreeFrom = moment(this.refs.degreeFrom.state.date).format('MMM Do YY');
+		let degreeTo = moment(this.refs.degreeTo.state.date).format('MMM Do YY');
+		let detail = this.refs.detail.getValue();
+		let skills = this.state.skills;
+		let email = this.refs.email.getValue();
+		let address = this.refs.address.getValue();
+		let mobile = this.refs.mobile.getValue();
+		let facebook = this.refs.facebook.getValue();
+		let linkedin = this.refs.linkedin.getValue();
+		let twitter = this.refs.twitter.getValue();
+		ref.child('submissions')
+				.push({
+					personal_info: {
+					firstName: firstName,
+					lastName: lastName,
+					city: city,
+					province: province,
+					country: country,
+					language: language,
+					dob: dob
+					},
+					experience: {
+					company: company,
+					designation: designation,
+					companyFrom: companyFrom,
+					companyTo: companyTo,
+					responsibilities: responsibilities,
+					},
+					education: {
+					institute: institute,
+					degree: degree,
+					degreeFrom: degreeFrom,
+					degreeTo: degreeTo,
+					detail: detail
+					},
+					skills: skills,
+					contact: {
+						email: email,
+						address: address,
+						mobile: mobile,
+						facebook: facebook,
+						linkedin: linkedin,
+						twitter: twitter
+					}
+
+				}, this.setState({submitSuccess: true}))
+	
 	}
     render() {
         return (
@@ -107,6 +168,12 @@ class Navigation extends Component {
 					<div className="submit-property">
 						<div className="tab-content submit-property__content">
 							<Card >
+								{this.state.submitSuccess===true ?
+								<div className="submit-property__success">
+									<i className="zmdi zmdi-check"></i>
+									<h2>Successful!</h2>
+									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur error illo nihil, labore animi voluptate saepe possimus, repellat provident, quasi sequi, odit distinctio quam laudantium! Soluta, consequuntur alias commodi! Dignissimos.</p>
+								</div> :
 								<form onSubmit={this.handleSubmit} >
 									<CardTitle title="Personal Information" />	
 									<Divider />
@@ -188,7 +255,7 @@ class Navigation extends Component {
 								  	  errorText={this.state.nativeLanguageError}
 								  	  ref="language"
 								    />
-								    <DatePicker hintText="Date Of Birth" style={style.textField} />
+								    <DatePicker hintText="Date Of Birth" style={style.textField} ref="dob" />
 								    <CardTitle title="Experience" subtitle="For students this is not mandatory" />	
 									<Divider />
 
@@ -203,8 +270,8 @@ class Navigation extends Component {
 								      ref="designation"
 								    /><br />
 								    <label style={{margin: '10px',paddingLeft: '8%',float: 'left'}} >Duration: </label>
-								    <DatePicker hintText="From" style={{width:'30%', marginLeft:'5%'}} />
-								    <DatePicker hintText="To" style={{width:'38%', margin: '10px'}} />
+								    <DatePicker hintText="From" style={{width:'30%', marginLeft:'5%'}} ref="companyFrom" />
+								    <DatePicker hintText="To" style={{width:'38%', margin: '10px'}} ref="companyTo" />
 								    <TextField
 								      floatingLabelText="Responsibilities"
 								      multiLine={true}
@@ -356,6 +423,7 @@ class Navigation extends Component {
 								    /><br />
 								    <RaisedButton label="Submit" type="submit-property__content" primary={true} style={{margin:15}} />
 								</form>
+								}
 							</Card>
 						</div>
 					</div>
